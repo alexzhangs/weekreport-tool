@@ -56,16 +56,25 @@ sudo sh weekreport-tool/install.sh
 6. Open report file to write your week report.
 
     ```
-    W30
+    # W30
     This is the weekly report of week 30.
     
-    Each report is started from a WRS(Weekly Report Signature), contains
-    an uppercase letter 'W' and followed by the <WEEK NUMBER> of the year.
+    Each report is started from a WRS(Weekly Report Signature) from a
+    new line, contains '# W' and followed by the <WEEK NUMBER> of the
+    year.
+
+    The week number must comply with ISO-8601, and this is not default
+    setting in Mac OS X 10.11, you should change it in both System
+    settings and Calendar settings on Mac.
+
+    To get week number from command line:
+
+    date '+%V' # ISO 8601 complied
 
     When you are done with this report, put a next WRS after the report.
     Then wr-sender knows that this report is ready to be sent.
 
-    W31
+    # W31
     ```
 
 7. Make sure macos-aws-ses-setup run successfully.
