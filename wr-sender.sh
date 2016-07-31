@@ -97,7 +97,7 @@ fi
 # Regex
 REGEX_BEGIN="^# W${WEEK:?}$" || xexit $?
 REGEX_BEGIN_FORCE="^# W${WEEK:?}( SENT)*$" || xexit $?
-REGEX_END="^# W[0-9]{1,2}$" || xexit $?
+REGEX_END="^# W[0-9]{1,2}( SENT)*$" || xexit $?
 SENT_MARKER="# W${WEEK:?} SENT" || xexit $?
 
 # Subject
