@@ -25,6 +25,8 @@ sudo sh weekreport-tool/install.sh
 
 1. Create a directory to store report files and config file.
 
+    This example is using '~/Desktop/weekreport'
+
     ```
     mkdir ~/Desktop/weekreport
     ```
@@ -45,6 +47,8 @@ sudo sh weekreport-tool/install.sh
 
 5. Create a report file.
 
+    One report file one year.
+
     ```
     touch ~/Desktop/weekreport/$(date '+%Y').txt
     ```
@@ -54,10 +58,11 @@ sudo sh weekreport-tool/install.sh
     ```
     W30
     This is the weekly report of week 30.
+    
     Each report is started from a WRS(Weekly Report Signature), contains
     an uppercase letter 'W' and followed by the <WEEK NUMBER> of the year.
 
-    When you are done with this report, put a next WRS.
+    When you are done with this report, put a next WRS after the report.
     Then wr-sender knows that this report is ready to be sent.
 
     W31
@@ -73,7 +78,14 @@ sudo sh weekreport-tool/install.sh
 
     Check your Email configured in config file.
 
-9. Send the report really.
+    After report is sent, wr-sender will mark this report is SENT, and
+    prevent to send it again.
+
+    Use -f to force to send a report again.
+
+9. Send the report really, no test anymore.
+
+    Use -n.
 
     ```
     wr-sender -n -w 30
