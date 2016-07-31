@@ -105,14 +105,19 @@ WR_SUBJECT=${WR_SUBJECT/<YEAR>/$YEAR} || xexit $?
 WR_SUBJECT=${WR_SUBJECT/<WEEK>/$WEEK} || xexit $?
 
 # Body
-MAIL_BODY="$(awk "/${REGEX_BEGIN_FORCE:?}/{flag=1;next}/${REGEX_END:?}/{flag=0}flag" "${MAIL_FILE:?}")" || xexit $?
+MAIL_BODY="$(awk -v begin="${REGEX_BEGIN_FORCE:?}" -v end="${REGEX_END:?}" \
+    '{if (match($0, begin) > 0) {flag=1; next}; if(match($0, end) > 0) {print lines; exit}; if (flag) lines=lines ORS $0}' "${MAIL_FILE:?}")" || xexit $?
+
 if [[ -z $MAIL_BODY ]]; then
     printf "Not found report in $MAIL_FILE.\n" >&2
     xexit 255
 fi
+
 if [[ $FORCE -ne 1 ]]; then
-    MAIL_BODY="$(awk "/${REGEX_BEGIN:?}/{flag=1;next}/${REGEX_END:?}/{flag=0}flag" "${MAIL_FILE:?}")" || xexit $?
+    MAIL_BODY="$(awk -v begin="${REGEX_BEGIN:?}" -v end="${REGEX_END:?}" \
+        '{if (match($0, begin) > 0) {flag=1; next}; if(match($0, end) > 0) {print lines; exit}; if (flag) lines=lines ORS $0}' "${MAIL_FILE:?}")" || xexit $?
 fi
+
 if [[ -z $MAIL_BODY ]]; then
     printf "Report was already sent.\n" >&2
     printf "Use -f to force send this report again.\n" >&2
