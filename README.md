@@ -3,18 +3,26 @@
 A tool to send Weekly Report by Email.
 Tested on Mac OS X 10.11.
 
-# Dependencies
+## Dependencies
 
-# Installation
+### macos-aws-ses
+
+```
+git clone https://github.com/alexzhangs/macos-aws-ses
+sudo sh macos-aws-ses/install.sh
+macos-aws-ses-setup -h
+```
+
+## Installation
 
 ```
 git clone https://github.com/alexzhangs/weekreport-tool
 sudo sh weekreport-tool/install.sh
 ```
 
-# Configuration
+## Configuration
 
-# Usage
+## Usage
 
 ```
 wr-sender.sh
@@ -49,7 +57,7 @@ OPTIONS
 	This help.
 ```
 
-## Example
+### Example
 
 ```
 wr-sender.sh -w 31 -y 2016
