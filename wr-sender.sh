@@ -106,7 +106,7 @@ WR_SUBJECT=${WR_SUBJECT/<WEEK>/$WEEK} || xexit $?
 
 # Body
 MAIL_BODY="$(awk -v begin="${REGEX_BEGIN_FORCE:?}" -v end="${REGEX_END:?}" \
-    '{if (match($0, begin) > 0) {flag=1; next}; if(match($0, end) > 0) {print lines; exit}; if (flag) lines=lines ORS $0}' "${MAIL_FILE:?}")" || xexit $?
+    '{if (match($0, begin) > 0) {flag=1; next}; if(flag && match($0, end) > 0) {print lines; exit}; if (flag) lines=lines ORS $0}' "${MAIL_FILE:?}")" || xexit $?
 
 if [[ -z $MAIL_BODY ]]; then
     printf "Not found report in $MAIL_FILE.\n" >&2
@@ -115,7 +115,7 @@ fi
 
 if [[ $FORCE -ne 1 ]]; then
     MAIL_BODY="$(awk -v begin="${REGEX_BEGIN:?}" -v end="${REGEX_END:?}" \
-        '{if (match($0, begin) > 0) {flag=1; next}; if(match($0, end) > 0) {print lines; exit}; if (flag) lines=lines ORS $0}' "${MAIL_FILE:?}")" || xexit $?
+        '{if (match($0, begin) > 0) {flag=1; next}; if(flag && match($0, end) > 0) {print lines; exit}; if (flag) lines=lines ORS $0}' "${MAIL_FILE:?}")" || xexit $?
 fi
 
 if [[ -z $MAIL_BODY ]]; then
