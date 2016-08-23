@@ -11,7 +11,22 @@ Tested on Mac OS X 10.11.
 ```
 git clone https://github.com/alexzhangs/macos-aws-ses
 sudo sh macos-aws-ses/install.sh
+```
+
+See how to use:
+
+```
 macos-aws-ses-setup -h
+```
+
+### macos-postfix-autostart
+
+Run below step after `macos-aws-ses` is configured.
+
+```
+git clone https://github.com/alexzhangs/macos-postfix-autostart
+sudo sh macos-aws-ses/install.sh
+sudo macos-postfix-autostart-setup.sh
 ```
 
 ## Installation
@@ -137,8 +152,10 @@ OPTIONS
 	This help.
 ```
 
-### Example
+## Run as cron job
+
+Send weekly report at 18:00 every Friday.
 
 ```
-wr-sender.sh -w 31 -y 2016
+0 18 * * 5 . ~/.bash_profile; /usr/local/bin/wr-sender -n
 ```
