@@ -92,7 +92,7 @@ while getopts nfw:y:h opt; do
     esac
 done
 
-say -i "Weekly Report Sender started, week ${WEEK} of year $YEAR."
+say -i "Weekly Report Sender started, year $YEAR and week $WEEK."
 
 # WR_REPO
 if [[ -z $WR_REPO ]]; then
