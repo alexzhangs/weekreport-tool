@@ -1,6 +1,14 @@
 #!/bin/bash
 
-[[ $DEBUG -gt 0 ]] && set -x
+trap 'xexit $?' 0 SIGHUP SIGIN SIGTERM
+
+set -eo pipefail
+
+if [[ $DEBUG -gt 0 ]]; then
+    set -x
+else
+    set +x
+fi
 
 usage () {
     printf "Send Weekly Report by Email.\n"
@@ -46,8 +54,8 @@ xexit () {
 }
 
 # Default
-WEEK=$(date '+%V') || xexit $?
-YEAR=$(date '+%Y') || xexit $?
+WEEK=$(date '+%V')
+YEAR=$(date '+%Y')
 
 while getopts nfw:y:h opt; do
     case $opt in
@@ -74,18 +82,18 @@ say -i "Weekly Report Sender started, week ${WEEK} of year $YEAR."
 # WR_REPO
 if [[ -z $WR_REPO ]]; then
     printf "Please set environment variable WR_REPO in your .bash_profile first.\n" >&2
-    xexit 255
+    exit 255
 fi
 
 # Config
 if [[ ! -s $WR_REPO/wr-tool.conf ]]; then
     printf "Please config $WR_REPO/wr-tool.conf first.\n" >&2
-    xexit 255
+    exit 255
 fi
-source "$WR_REPO/wr-tool.conf" || xexit $?
+source "$WR_REPO/wr-tool.conf"
 
 # File
-get_mail_file || xexit $?
+get_mail_file
 
 # Test or non-test
 if [[ $NO_TEST -eq 1 ]]; then
@@ -95,37 +103,37 @@ if [[ $NO_TEST -eq 1 ]]; then
 fi
 
 # Regex
-REGEX_BEGIN="^# W${WEEK:?}$" || xexit $?
-REGEX_BEGIN_FORCE="^# W${WEEK:?}( SENT)*$" || xexit $?
-REGEX_END="^# W[0-9]{1,2}( SENT)*$" || xexit $?
-SENT_MARKER="# W${WEEK:?} SENT" || xexit $?
+REGEX_BEGIN="^# W${WEEK:?}$"
+REGEX_BEGIN_FORCE="^# W${WEEK:?}( SENT)*$"
+REGEX_END="^# W[0-9]{1,2}( SENT)*$"
+SENT_MARKER="# W${WEEK:?} SENT"
 
 # Subject
-WR_SUBJECT=${WR_SUBJECT/<YEAR>/$YEAR} || xexit $?
-WR_SUBJECT=${WR_SUBJECT/<WEEK>/$WEEK} || xexit $?
+WR_SUBJECT=${WR_SUBJECT/<YEAR>/$YEAR}
+WR_SUBJECT=${WR_SUBJECT/<WEEK>/$WEEK}
 
 # Body
 MAIL_BODY="$(awk -v begin="${REGEX_BEGIN_FORCE:?}" -v end="${REGEX_END:?}" \
-    '{if (match($0, begin) > 0) {flag=1; next}; if(flag && match($0, end) > 0) {print lines; exit}; if (flag) lines=lines ORS $0}' "${MAIL_FILE:?}")" || xexit $?
+    '{if (match($0, begin) > 0) {flag=1; next}; if(flag && match($0, end) > 0) {print lines; exit}; if (flag) lines=lines ORS $0}' "${MAIL_FILE:?}")"
 
 if [[ -z $MAIL_BODY ]]; then
     printf "Not found report in $MAIL_FILE.\n" >&2
-    xexit 255
+    exit 255
 fi
 
 if [[ $FORCE -ne 1 ]]; then
     MAIL_BODY="$(awk -v begin="${REGEX_BEGIN:?}" -v end="${REGEX_END:?}" \
-        '{if (match($0, begin) > 0) {flag=1; next}; if(flag && match($0, end) > 0) {print lines; exit}; if (flag) lines=lines ORS $0}' "${MAIL_FILE:?}")" || xexit $?
+        '{if (match($0, begin) > 0) {flag=1; next}; if(flag && match($0, end) > 0) {print lines; exit}; if (flag) lines=lines ORS $0}' "${MAIL_FILE:?}")"
 fi
 
 if [[ -z $MAIL_BODY ]]; then
     say -i "Report was already sent." >&2
     printf "Use -f to force send this report again.\n" >&2
-    xexit
+    exit
 fi
 
 # Sending
-sendmail -f "${WR_SENDER:?}" -F "${WR_SENDER_NAME:?}" -t "${WR_TEST_TO:?}" << EOF || xexit $?
+sendmail -f "${WR_SENDER:?}" -F "${WR_SENDER_NAME:?}" -t "${WR_TEST_TO:?}" << EOF
 MIME-Version: 1.0
 To: ${WR_TEST_TO:?}
 Cc: $WR_TEST_CC
@@ -142,4 +150,4 @@ EOF
 # Mark report as SENT
 sed -E -i '' "s/${REGEX_BEGIN_FORCE:?}/${SENT_MARKER:?}/" "${MAIL_FILE:?}"
 
-xexit $?
+exit
