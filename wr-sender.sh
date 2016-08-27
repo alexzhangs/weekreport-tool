@@ -119,9 +119,9 @@ if [[ $FORCE -ne 1 ]]; then
 fi
 
 if [[ -z $MAIL_BODY ]]; then
-    printf "Report was already sent.\n" >&2
+    say -i "Report was already sent." >&2
     printf "Use -f to force send this report again.\n" >&2
-    xexit 255
+    xexit
 fi
 
 # Sending
