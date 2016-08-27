@@ -41,7 +41,22 @@ usage () {
 }
 
 get_mail_file () {
-    MAIL_FILE="$WR_REPO/$YEAR.txt"
+    MAIL_FILE="$WR_REPO/$YEAR$(get_mail_file_extension)"
+}
+
+get_mail_file_extension () {
+    case $WR_CONTENT_TYPE in
+        plain)
+            echo ".txt"
+            ;;
+        markdown)
+            echo ".md"
+            ;;
+        *)
+            echo "Unsupported content type: $WR_CONTENT_TYPE" >&2
+            return 255
+            ;;
+    esac
 }
 
 xexit () {
@@ -86,11 +101,11 @@ if [[ -z $WR_REPO ]]; then
 fi
 
 # Config
-if [[ ! -s $WR_REPO/wr-tool.conf ]]; then
-    printf "Please config $WR_REPO/wr-tool.conf first.\n" >&2
+if [[ ! -s $WR_REPO/weekreport.conf ]]; then
+    printf "Please config $WR_REPO/weekreport.conf first.\n" >&2
     exit 255
 fi
-source "$WR_REPO/wr-tool.conf"
+source "$WR_REPO/weekreport.conf"
 
 # File
 get_mail_file
@@ -103,10 +118,10 @@ if [[ $NO_TEST -eq 1 ]]; then
 fi
 
 # Regex
-REGEX_BEGIN="^# W${WEEK:?}$"
-REGEX_BEGIN_FORCE="^# W${WEEK:?}( SENT)*$"
-REGEX_END="^# W[0-9]{1,2}( SENT)*$"
-SENT_MARKER="# W${WEEK:?} SENT"
+REGEX_BEGIN="^## W${WEEK:?}$"
+REGEX_BEGIN_FORCE="^## W${WEEK:?}( SENT)*$"
+REGEX_END="^## W[0-9]{1,2}( SENT)*$"
+SENT_MARKER="## W${WEEK:?} SENT"
 
 # Subject
 WR_SUBJECT=${WR_SUBJECT/<YEAR>/$YEAR}
@@ -132,6 +147,20 @@ if [[ -z $MAIL_BODY ]]; then
     exit
 fi
 
+case $WR_CONTENT_TYPE in
+    plain)
+        WR_MAIL_CONTENT_TYPE="text/plain; charset=UTF-8"
+        ;;
+    markdown)
+        WR_MAIL_CONTENT_TYPE="text/html; charset=UTF-8"
+        MAIL_BODY="$(echo "$MAIL_BODY" | markdown)"
+        ;;
+    *)
+        echo "Unsupported content type: $WR_CONTENT_TYPE" >&2
+        exit 255
+        ;;
+esac
+
 # Sending
 sendmail -f "${WR_SENDER:?}" -F "${WR_SENDER_NAME:?}" -t "${WR_TEST_TO:?}" << EOF
 MIME-Version: 1.0
@@ -139,7 +168,7 @@ To: ${WR_TEST_TO:?}
 Cc: $WR_TEST_CC
 Bcc: $WR_TEST_BCC
 Subject: ${WR_SUBJECT:?}
-Content-Type: ${WR_CONTENT_TYPE:?}
+Content-Type: ${WR_MAIL_CONTENT_TYPE:?}
 
 ${MAIL_BODY:?}
 
