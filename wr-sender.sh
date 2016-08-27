@@ -1,6 +1,6 @@
 #!/bin/bash
 
-trap 'xexit $?' 0 SIGHUP SIGIN SIGTERM
+trap 'xexit $?' 0 SIGHUP SIGINT SIGTERM
 
 set -eo pipefail
 
