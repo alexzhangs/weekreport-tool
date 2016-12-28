@@ -59,6 +59,13 @@ get_mail_file_extension () {
     esac
 }
 
+concat_recipients () {
+    while [[ $# -gt 0 ]]; do
+        printf "$1,"
+        shift
+    done
+}
+
 xexit () {
     if [[ $1 -eq 0 ]]; then
         say -i "Succeeded."
@@ -112,9 +119,13 @@ get_mail_file
 
 # Test or non-test
 if [[ $NO_TEST -eq 1 ]]; then
-    WR_TEST_TO="${WR_TO:?}"
-    WR_TEST_CC="$WR_CC"
-    WR_TEST_BCC="$WR_BCC"
+    send_to="$(concat_recipients "${WR_TO[@]}")"
+    cc_to="$(concat_recipients "${WR_CC[@]}")"
+    bcc_to="$(concat_recipients "${WR_BCC[@]}")"
+else
+    send_to="$(concat_recipients "${WR_TEST_TO[@]}")"
+    cc_to="$(concat_recipients "${WR_TEST_CC[@]}")"
+    bcc_to="$(concat_recipients "${WR_TEST_BCC[@]}")"
 fi
 
 # Regex
@@ -162,11 +173,11 @@ case $WR_CONTENT_TYPE in
 esac
 
 # Sending
-sendmail -f "${WR_SENDER:?}" -F "${WR_SENDER_NAME:?}" -t "${WR_TEST_TO:?}" << EOF
+sendmail -f "${WR_SENDER:?}" -F "${WR_SENDER_NAME:?}" -t "${send_to:?}" << EOF
 MIME-Version: 1.0
-To: ${WR_TEST_TO:?}
-Cc: $WR_TEST_CC
-Bcc: $WR_TEST_BCC
+To: ${send_to:?}
+Cc: $cc_to
+Bcc: $bcc_to
 Subject: ${WR_SUBJECT:?}
 Content-Type: ${WR_MAIL_CONTENT_TYPE:?}
 
