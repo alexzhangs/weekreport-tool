@@ -1,14 +1,8 @@
-#!/bin/bash
+#!/bin/bash -e
 
 trap 'xexit $?' 0 SIGHUP SIGINT SIGTERM
 
-set -eo pipefail
-
-if [[ $DEBUG -gt 0 ]]; then
-    set -x
-else
-    set +x
-fi
+[[ $DEBUG -gt 0 ]] && set -x || set +x
 
 usage () {
     printf "Send Weekly Report by Email.\n"
