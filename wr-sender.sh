@@ -22,8 +22,8 @@ usage () {
 
     printf "\t[-w WEEK]\n\n"
     printf "\tWeek number of the year, default is current week. \n"
-    printf "\tUsing ISO 8601 calendar (Monday as the first day of the week) as a number (1-53).\n"
-    printf "\tIf the week containing January 1 has four or more days in the new year, then it is week 1; \n"
+    printf "\tUsing ISO 8601 calendar (Monday as the first day of the week) as a number (01-53).\n"
+    printf "\tIf the week containing January 1 has four or more days in the new year, then it is week 01; \n"
     printf "\totherwise it is the last week of the previous year.\n\n"
 
     printf "\t[-y YEAR]\n\n"

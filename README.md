@@ -193,8 +193,8 @@ OPTIONS
 	[-w WEEK]
 
 	Week number of the year, default is current week.
-	Using ISO 8601 calendar (Monday as the first day of the week) as a number (1-53).
-	If the week containing January 1 has four or more days in the new year, then it is week 1;
+	Using ISO 8601 calendar (Monday as the first day of the week) as a number (01-53).
+	If the week containing January 1 has four or more days in the new year, then it is week 01;
 	otherwise it is the last week of the previous year.
 
 	[-y YEAR]
