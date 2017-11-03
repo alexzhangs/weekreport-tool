@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo ">>Copying scripts to /usr/local/bin/"
-find "${0%/*}" -type f -depth 1 -not -name "${0##*/}" -and \( -name "*.sh" -or -name "*.py" \) \
+find "${0%/*}" -maxdepth 1 -type f -not -name "${0##*/}" -and \( -name "*.sh" -or -name "*.py" \) \
     | while read f; do
           echo "  $f"
           fn=${f##*/} && /bin/cp -a "$f" /usr/local/bin/ && \
