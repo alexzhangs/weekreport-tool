@@ -21,6 +21,9 @@ macos-aws-ses-setup -h
 
 ### macos-postfix-autostart
 
+> Skip this step if you are using macOS High Sierra or higher.
+> There's [no need to setup auto start for postfix in such case](https://github.com/alexzhangs/macos-postfix-autostart#macos-postfix-autostart).
+
 Run below step after `macos-aws-ses` is configured.
 
 ```
